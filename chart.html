@@ -32,7 +32,7 @@
       glucoseChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: [],
+          labels: [],  // Remove time-based labels
           datasets: [{
             label: 'Glucose Level (mg/dL)',
             data: [],
@@ -48,8 +48,8 @@
           maintainAspectRatio: false,
           scales: {
             y: {
-              min: 70,
-              max: 180,
+              min: 0,
+              max: 300,
               ticks: {
                 stepSize: 20
               },
@@ -59,19 +59,19 @@
             },
             x: {
               grid: {
-                display: false
+                display: false  // Hide x-axis grid and labels
               }
             }
           }
         }
       });
     }
-    
-    // Call initialization
+
+    // Initialize the chart
     initChart();
     
-    // Update function
-    function updateChart(time, value) {
+    // Function to update the chart
+    function updateChart(value) {
       if (!glucoseChart) return;
       
       // Limit to 20 data points
@@ -80,16 +80,25 @@
         glucoseChart.data.datasets[0].data.shift();
       }
       
-      glucoseChart.data.labels.push(time);
+      // Push the glucose value to the chart data
       glucoseChart.data.datasets[0].data.push(value);
       
-      // Color coding
+      // Color coding for glucose levels
       glucoseChart.data.datasets[0].pointBackgroundColor = 
         glucoseChart.data.datasets[0].data.map(v => 
           v < 70 ? '#FF6384' : (v > 140 ? '#FFCE56' : '#4BC0C0'));
       
       glucoseChart.update();
     }
+    
+    // Listen for messages from Thunkable
+    window.addEventListener("message", function(event) {
+      // You can verify the origin here, but for now, we'll trust any message
+      if (event.data.action === "updateGraph") {
+        const glucoseValue = event.data.value;  // Get the glucose value from the message
+        updateChart(glucoseValue);  // Update the chart with the new glucose value
+      }
+    });
   </script>
 </body>
 </html>
