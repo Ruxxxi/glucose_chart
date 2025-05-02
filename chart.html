@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Use this specific non-module version -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <style>
+    body { 
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #container {
+      width: 100vw;
+      height: 100vh;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <canvas id="glucoseChart"></canvas>
+  </div>
+
+  <script>
+    // Initialize chart
+    const ctx = document.getElementById('glucoseChart').getContext('2d');
+    let glucoseChart;
+    
+    function initChart() {
+      glucoseChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Glucose Level (mg/dL)',
+            data: [],
+            borderColor: '#4B9CD3',
+            backgroundColor: 'rgba(75, 156, 211, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 70,
+              max: 180,
+              ticks: {
+                stepSize: 20
+              },
+              grid: {
+                color: 'rgba(0,0,0,0.05)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Call initialization
+    initChart();
+    
+    // Update function
+    function updateChart(time, value) {
+      if (!glucoseChart) return;
+      
+      // Limit to 20 data points
+      if (glucoseChart.data.labels.length >= 20) {
+        glucoseChart.data.labels.shift();
+        glucoseChart.data.datasets[0].data.shift();
+      }
+      
+      glucoseChart.data.labels.push(time);
+      glucoseChart.data.datasets[0].data.push(value);
+      
+      // Color coding
+      glucoseChart.data.datasets[0].pointBackgroundColor = 
+        glucoseChart.data.datasets[0].data.map(v => 
+          v < 70 ? '#FF6384' : (v > 140 ? '#FFCE56' : '#4BC0C0'));
+      
+      glucoseChart.update();
+    }
+  </script>
+</body>
+</html>
