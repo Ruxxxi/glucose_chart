@@ -27,7 +27,6 @@
     // Initialize chart
     const ctx = document.getElementById('glucoseChart').getContext('2d');
     let glucoseChart;
-    
     function initChart() {
       glucoseChart = new Chart(ctx, {
         type: 'line',
@@ -69,7 +68,10 @@
 
     // Initialize the chart
     initChart();
-    
+     // TEMPORARY: Add sample data to test the graph (delete later)
+     for (let i = 0; i < 5; i++) {
+      updateChart(100 + Math.random() * 50); // Random values between 100-150
+    }
     // Function to update the chart
     function updateChart(value) {
       if (!glucoseChart) return;
